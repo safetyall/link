@@ -8,74 +8,127 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Сброс стилей */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* --- СТИЛИ ДЛЯ ФОНА И ОБЩИЕ --- */
         body {
             font-family: 'Oswald', sans-serif;
-            /* Темный фон, имитирующий глубокий космос или темную тему интерфейса */
-            background: radial-gradient(circle at center, #0f1016 0%, #050507 100%);
+            background-color: #050608; /* Очень темный, почти черный */
+            margin: 0;
+            overflow: hidden; /* Скрываем скроллбары */
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             color: #ffffff;
-            overflow: hidden;
-        }
-
-        /* Контейнер-карточка по центру */
-        .menu-card {
-            background-color: rgba(18, 20, 28, 0.95); /* Очень темный фон карточки */
-            padding: 60px 40px;
-            border-radius: 30px;
-            text-align: center;
-            max-width: 600px;
-            width: 90%;
-            border: 1px solid rgba(255, 255, 255, 0.05); /* Тонкая рамка */
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); /* Тень для объема */
             position: relative;
         }
 
-        /* Заголовок SafetyAll */
+        /* Канвас для частиц */
+        #particles-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1; /* Помещаем назад */
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* 3D Сетка */
+        .hero-grid {
+            position: fixed;
+            bottom: -30%;
+            left: -50%;
+            width: 200%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 242, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: perspective(500px) rotateX(60deg);
+            z-index: -2;
+            animation: moveGrid 15s linear infinite;
+            mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, transparent 60%);
+            -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, transparent 60%);
+            opacity: 0.4;
+        }
+
+        /* Анимация движения сетки */
+        @keyframes moveGrid {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(40px); }
+        }
+
+        /* Радиальное свечение */
+        .hero-glow {
+            position: fixed;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at center, rgba(0,242,255,0.08) 0%, transparent 60%);
+            top: 0; left: 0;
+            z-index: -3;
+            pointer-events: none;
+        }
+
+        /* --- АНИМАЦИЯ ТЕКСТА (PLASMA PULSE) --- */
+        @keyframes plasmaPulse {
+            0%, 100% {
+                text-shadow: 
+                    0 0 5px rgba(140, 100, 255, 0.6), 
+                    0 0 15px rgba(140, 100, 255, 0.3);
+                color: #e0e0ff;
+            }
+            50% {
+                text-shadow: 
+                    0 0 5px rgba(255, 255, 255, 0.9),
+                    0 0 20px rgba(140, 100, 255, 0.8),
+                    0 0 40px rgba(0, 194, 255, 0.5);
+                color: #ffffff;
+            }
+        }
+
+        /* --- СТИЛИ КАРТОЧКИ МЕНЮ --- */
+        .menu-card {
+            background-color: rgba(18, 20, 28, 0.85); /* Чуть прозрачнее, чтобы видеть фон */
+            backdrop-filter: blur(10px); /* Размытие фона под карточкой */
+            padding: 60px 40px;
+            border-radius: 30px;
+            text-align: center;
+            max-width: 700px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 10; /* Гарантируем, что меню поверх частиц */
+        }
+
         .main-title {
             font-size: 80px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 10px;
-            color: #ffffff;
-            /* Эффект свечения как на скрине (бело-фиолетовый ореол) */
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3),
-                         0 0 40px rgba(100, 100, 255, 0.2);
             line-height: 1;
+            animation: plasmaPulse 6s infinite ease-in-out;
+            will-change: text-shadow, color;
         }
 
-        /* Подзаголовок (онлайн платформа...) */
         .subtitle {
             font-size: 18px;
             font-weight: 300;
-            color: #b0b5c0; /* Светло-серый цвет текста */
+            color: #b0b5c0;
             margin-bottom: 40px;
             letter-spacing: 0.5px;
         }
 
-        /* Текст "Выберите язык" */
         .lang-label {
             font-size: 16px;
             font-weight: 400;
             text-transform: uppercase;
-            color: #58c7fa; /* Голубой акцент, похожий на цвет кнопок */
+            color: #58c7fa;
             margin-bottom: 20px;
             letter-spacing: 1.5px;
             position: relative;
             display: inline-block;
         }
         
-        /* Декоративная линия под "Выберите язык" */
         .lang-label::after {
             content: '';
             display: block;
@@ -85,15 +138,13 @@
             margin: 5px auto 0;
         }
 
-        /* Контейнер кнопок */
         .buttons-container {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
         }
 
-        /* Стили кнопок */
         .btn {
             display: inline-block;
             text-decoration: none;
@@ -101,66 +152,144 @@
             font-size: 18px;
             font-weight: 500;
             text-transform: uppercase;
-            padding: 15px 40px;
+            padding: 15px 30px;
             border-radius: 5px;
             transition: all 0.3s ease;
             letter-spacing: 1px;
-            min-width: 180px;
+            min-width: 160px;
             cursor: pointer;
+            text-align: center;
+            background-color: rgba(0,0,0,0.3); /* Легкая подложка для читаемости */
         }
 
-        /* Стиль кнопки (как на скрине - с голубой рамкой) */
         .btn-primary {
-            background-color: transparent;
-            border: 1px solid #00d4ff; /* Яркий циановый цвет */
+            border: 1px solid #00d4ff;
             color: #ffffff;
             box-shadow: 0 0 10px rgba(0, 212, 255, 0.1);
         }
 
         .btn-primary:hover {
-            background-color: rgba(0, 212, 255, 0.1);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+            background-color: rgba(0, 212, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
             transform: translateY(-2px);
         }
 
-        /* Адаптив для мобильных устройств */
-        @media (max-width: 500px) {
-            .main-title {
-                font-size: 50px;
-            }
-            .subtitle {
-                font-size: 14px;
-            }
-            .menu-card {
-                padding: 40px 20px;
-            }
-            .btn {
-                width: 100%; /* Кнопки на всю ширину на телефоне */
-            }
+        @media (max-width: 600px) {
+            .main-title { font-size: 50px; }
+            .subtitle { font-size: 14px; }
+            .menu-card { padding: 40px 20px; }
+            .btn { width: 100%; margin-bottom: 10px; }
         }
     </style>
 </head>
 <body>
 
+    <canvas id="particles-canvas"></canvas>
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+
     <div class="menu-card">
         <h1 class="main-title">SAFETYALL</h1>
-        
-        <p class="subtitle">
-            Онлайн платформа по обучению персонала
-        </p>
+        <p class="subtitle">Онлайн платформа по обучению персонала</p>
 
         <div class="lang-label">Выберите свой язык</div>
 
         <div class="buttons-container">
-            <a href="https://safetyall.github.io/ru/" class="btn btn-primary">
-                Русский
-            </a>
-            
-            <a href="https://safetyall.github.io/kz/" class="btn btn-primary">
-                Қазақша
-            </a>
+            <a href="https://safetyall.github.io/ru/" class="btn btn-primary">Русский</a>
+            <a href="https://safetyall.github.io/kz/" class="btn btn-primary">Қазақша</a>
+            <a href="https://safetyall.github.io/en/" class="btn btn-primary">English</a>
         </div>
     </div>
 
+    <script>
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Устанавливаем размер канваса на все окно
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray;
+
+        // Класс частицы
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                // Скорость движения (случайная)
+                this.directionX = (Math.random() * 0.4) - 0.2;
+                this.directionY = (Math.random() * 0.4) - 0.2;
+                this.size = Math.random() * 2; // Размер точки
+            }
+            
+            // Обновление позиции
+            update() {
+                // Если частица улетает за край экрана, меняем направление (отскакивает)
+                if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+                if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+                
+                this.x += this.directionX;
+                this.y += this.directionY;
+            }
+            
+            // Отрисовка точки
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = 'rgba(0, 242, 255, 0.5)'; // Цвет точек (cyan)
+                ctx.fill();
+            }
+        }
+
+        // Инициализация массива частиц
+        function init() {
+            particlesArray = [];
+            // Формула количества частиц в зависимости от размера экрана
+            let numberOfParticles = (canvas.width * canvas.height) / 15000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        // Анимация кадров
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+                
+                // Соединение линиями
+                for (let j = i; j < particlesArray.length; j++) {
+                    const dx = particlesArray[i].x - particlesArray[j].x;
+                    const dy = particlesArray[i].y - particlesArray[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Если расстояние меньше 150px, рисуем линию
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        // Чем ближе, тем ярче линия
+                        ctx.strokeStyle = 'rgba(0, 242, 255, ' + (1 - distance/150) * 0.15 + ')';
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+                        ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        // Обновление при изменении размера окна
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            init();
+        });
+
+        // Запуск
+        init();
+        animate();
+    </script>
 </body>
 </html>
